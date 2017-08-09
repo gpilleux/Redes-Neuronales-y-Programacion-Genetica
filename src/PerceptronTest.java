@@ -1,4 +1,4 @@
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,17 +18,18 @@ public class PerceptronTest {
 		p.setBias(3);
 		
 		p.setCompleteInput(0, 0);
-		assertEquals(p.getSignal(), 1);
+		assertEquals((int)p.getSignal(), 1);
 		
 		p.setCompleteInput(0, 1);
-		assertEquals(p.getSignal(), 1);
+		assertEquals((int)p.getSignal(), 1);
 		
 		p.setCompleteInput(1, 0);
-		assertEquals(p.getSignal(), 1);
+		assertEquals((int)p.getSignal(), 1);
 		
 		p.setCompleteInput(1, 1);
-		assertEquals(p.getSignal(), 0);
+		assertEquals((int)p.getSignal(), 0);
 	}
+	
 	
 	@Test
 	public void orTest(){
@@ -36,16 +37,16 @@ public class PerceptronTest {
 		p.setBias(-1);
 		
 		p.setCompleteInput(0, 0);
-		assertEquals(p.getSignal(), 0);
+		assertEquals((int)p.getSignal(), 0);
 		
 		p.setCompleteInput(0, 1);
-		assertEquals(p.getSignal(), 1);
+		assertEquals((int)p.getSignal(), 1);
 		
 		p.setCompleteInput(1, 0);
-		assertEquals(p.getSignal(), 1);
+		assertEquals((int)p.getSignal(), 1);
 		
 		p.setCompleteInput(1, 1);
-		assertEquals(p.getSignal(), 1);
+		assertEquals((int)p.getSignal(), 1);
 	}
 	
 	@Test
@@ -54,16 +55,16 @@ public class PerceptronTest {
 		p.setBias(-3);
 		
 		p.setCompleteInput(0, 0);
-		assertEquals(p.getSignal(), 0);
+		assertEquals((int)p.getSignal(), 0);
 		
 		p.setCompleteInput(0, 1);
-		assertEquals(p.getSignal(), 0);
+		assertEquals((int)p.getSignal(), 0);
 		
 		p.setCompleteInput(1, 0);
-		assertEquals(p.getSignal(), 0);
+		assertEquals((int)p.getSignal(), 0);
 		
 		p.setCompleteInput(1, 1);
-		assertEquals(p.getSignal(), 1);
+		assertEquals((int)p.getSignal(), 1);
 	}
 
 }

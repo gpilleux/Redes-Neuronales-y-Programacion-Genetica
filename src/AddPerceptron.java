@@ -6,8 +6,8 @@ public class AddPerceptron {
 	private Perceptron p4;
 	private Perceptron p5;
 	
-	private int sum;
-	private int carry;
+	private double sum;
+	private double carry;
 	
 	//5 NAND perceptrons
 	public AddPerceptron(){
@@ -33,7 +33,7 @@ public class AddPerceptron {
 	}
 
 	//sets in initial inputs 
-	public void feed(int x1, int x2){
+	public void feed(double x1, double x2){
 		p1.setInput(x1);
 		p1.setInput(x2);
 		
@@ -52,11 +52,11 @@ public class AddPerceptron {
 		this.carry = p5.getOutput();
 	}
 	
-	public int getSum(){
+	public double getSum(){
 		return this.sum;
 	}
 	
-	public int getCarry(){
+	public double getCarry(){
 		return this.carry;
 	}
 	

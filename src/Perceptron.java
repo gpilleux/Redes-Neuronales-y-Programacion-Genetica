@@ -2,16 +2,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Perceptron {
-	private int w1;
-	private int w2;
-	private int bias;
+	private double w1;
+	private double w2;
+	private double bias;
 	
-	private int output;
+	private double output;
 	
-	private int val1;
-	private int val2;
+	private double val1;
+	private double val2;
 	
-	private List<Integer> inputList;
+	private List<Double> inputList;
 	
 	private List<Perceptron> conections;
 
@@ -20,38 +20,38 @@ public class Perceptron {
 		this.w1 = 0;
 		this.w2 = 0;
 		this.bias = 0;
-		inputList = new ArrayList<Integer>();
+		inputList = new ArrayList<Double>();
 		conections = new ArrayList<Perceptron>();
 	}
 	
-	public Perceptron(int w1, int w2, int bias){
+	public Perceptron(double w1, double w2, double bias){
 		this.completeSetUp(w1, w2, bias);
-		inputList = new ArrayList<Integer>();
+		inputList = new ArrayList<Double>();
 		conections = new ArrayList<Perceptron>();
 	}
 
-	public void setWeights(int w1, int w2) {
+	public void setWeights(double w1, double w2) {
 		this.w1 = w1;
 		this.w2 = w2;
 	}
 	
-	public void setBias(int bias) {
+	public void setBias(double bias) {
 		this.bias = bias;
 	}
 	
 	
-	public void completeSetUp(int w1, int w2, int bias){
+	public void completeSetUp(double w1, double w2, double bias){
 		this.setWeights(w1, w2);
 		this.setBias(bias);
 	}
 
 	//calculates the output depending on the inputs received
-	public int getSignal() {
+	public double getSignal() {
 		if(inputList.size() > 1){
-			int in1 = inputList.get(0);
-			int in2 = inputList.get(1);
+			double in1 = inputList.get(0);
+			double in2 = inputList.get(1);
 			//calculamos el valor
-			int value = this.w1*in1 + this.w2*in2 + this.bias;
+			double value = this.w1*in1 + this.w2*in2 + this.bias;
 			//delete inputs from list
 			this.inputList.clear();
 			if(value <= 0 ){
@@ -65,7 +65,7 @@ public class Perceptron {
 		return -1;
 	}
 	
-	public void setInput(int in1){
+	public void setInput(double in1){
 		//save the inputs of the perceptron
 		if(inputList.size() == 0){
 			this.val1 = in1;
@@ -89,7 +89,7 @@ public class Perceptron {
 	}
 
 	//testing purposes
-	public void setCompleteInput(int in1, int in2) {
+	public void setCompleteInput(double in1, double in2) {
 		this.inputList.add(in1);
 		this.inputList.add(in2);
 	}
@@ -104,23 +104,50 @@ public class Perceptron {
 		return this.conections;
 	}
 	
-	public List<Integer> getInputs(){
+	public List<Double> getInputs(){
 		return this.inputList;
 	}
 	
 	//returns output of the perceptron
-	public int getOutput(){
+	public double getOutput(){
 		return this.output;
 	}
 	
-	public int getIn1(){
+	public double getIn1(){
 		return this.val1;
 	}
 	
-	public int getIn2(){
+	public double getIn2(){
 		return this.val2;
 	}
 	
+	public double getWeight1(){
+		return this.w1;
+	}
+	
+	public double getWeight2(){
+		return this.w2;
+	}
+	
+	//recieves ordered pair and depending on the function returns 0 or 1
+	public void train(double x, double y, double desired, double learningRate){
+		this.setCompleteInput(x, y);
+		this.getSignal();
+		double thisOut = this.getOutput();
+		
+		double weight1 = this.getWeight1();
+		double weight2 = this.getWeight2();
+		
+		//thisOut = 1; desired = 0 => restar
+		if(thisOut > desired){
+			this.setWeights(weight1 - learningRate*x, weight2 - learningRate*y);
+		}
+		//thisOut = 0; desired = 1 => sumar
+		else if(thisOut < desired){
+			this.setWeights(weight1 + learningRate*x, weight2 + learningRate*y);
+		}
+		
+	}
 	
 
 }
