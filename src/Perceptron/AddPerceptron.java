@@ -1,3 +1,4 @@
+package Perceptron;
 
 public class AddPerceptron {
 	private Perceptron p1;

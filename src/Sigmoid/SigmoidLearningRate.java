@@ -1,10 +1,13 @@
+package Sigmoid;
+
 import java.util.concurrent.ThreadLocalRandom;
 
-public class LearningRatio {
+public class SigmoidLearningRate {
 
 	public static void main(String[] args) {
-		Perceptron p = new Perceptron();
-		p.completeSetUp(-3, 2, 1);
+		SigmoidNeuron sn = new SigmoidNeuron();
+		sn.setWeights(-3, 2);
+		sn.setBias(1);
 		
 		int trials = 10000;
 		
@@ -12,8 +15,9 @@ public class LearningRatio {
 		for(int i=0; i<trials; i++){
 			double x = ThreadLocalRandom.current().nextInt(-50, 51);
 			double y = ThreadLocalRandom.current().nextInt(-50, 51);
-			p.setCompleteInput(x, y);
-			int perceptronOut = (int)p.getSignal();
+			sn.setInput(x);
+			sn.setInput(y);
+			int perceptronOut = (int)sn.getSignal();
 			if(2*x + 1 >= y){
 				//1
 				if(perceptronOut == 1)
@@ -41,15 +45,16 @@ public class LearningRatio {
 			}else{
 				trainedOutput = 0;
 			}
-			p.train(x, y, trainedOutput, c);
+			sn.train(x, y, trainedOutput, c);
 		}
 		
 		int countAssertsAfter = 0;
 		for(int i=0; i<trials; i++){
 			double x = ThreadLocalRandom.current().nextInt(-50, 51);
 			double y = ThreadLocalRandom.current().nextInt(-50, 51);
-			p.setCompleteInput(x, y);
-			int perceptronOut = (int)p.getSignal();
+			sn.setInput(x);
+			sn.setInput(y);
+			int perceptronOut = (int)sn.getSignal();
 			if(2*x + 1 >= y){
 				//1
 				if(perceptronOut == 1)
@@ -61,7 +66,6 @@ public class LearningRatio {
 			}
 		}
 		System.out.println(1.0*countAssertsAfter/trials);
-		
 
 	}
 
