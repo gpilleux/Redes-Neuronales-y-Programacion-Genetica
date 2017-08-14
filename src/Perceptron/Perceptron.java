@@ -3,8 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Perceptron {
-	private double w1;
-	private double w2;
+	private List<Double> weightList;
 	private double bias;
 	
 	private double output;
@@ -18,9 +17,7 @@ public class Perceptron {
 
 	
 	public Perceptron(){
-		this.w1 = 0;
-		this.w2 = 0;
-		this.bias = 0;
+		weightList = new ArrayList<Double>();
 		inputList = new ArrayList<Double>();
 		conections = new ArrayList<Perceptron>();
 	}
@@ -32,8 +29,8 @@ public class Perceptron {
 	}
 
 	public void setWeights(double w1, double w2) {
-		this.w1 = w1;
-		this.w2 = w2;
+		this.weightList.add(w1);
+		this.weightList.add(w2);
 	}
 	
 	public void setBias(double bias) {
@@ -48,11 +45,11 @@ public class Perceptron {
 
 	//calculates the output depending on the inputs received
 	public double getSignal() {
-		if(inputList.size() > 1){
-			double in1 = inputList.get(0);
-			double in2 = inputList.get(1);
-			//calculamos el valor
-			double value = this.w1*in1 + this.w2*in2 + this.bias;
+		if(this.inputList.size() == this.weightList.size()){
+			double value = this.bias;
+			for(int i=0; i<this.inputList.size(); i++){
+				value += this.weightList.get(i) * this.inputList.get(i);
+			}
 			//delete inputs from list
 			this.inputList.clear();
 			if(value <= 0 ){
@@ -123,31 +120,43 @@ public class Perceptron {
 	}
 	
 	public double getWeight1(){
-		return this.w1;
+		return this.weightList.get(0);
 	}
 	
 	public double getWeight2(){
-		return this.w2;
+		return this.weightList.get(1);
 	}
 	
 	//recieves ordered pair and depending on the function returns 0 or 1
 	public void train(double x, double y, double desired, double learningRate){
 		this.setCompleteInput(x, y);
-		this.getSignal();
-		double thisOut = this.getOutput();
 		
-		double weight1 = this.getWeight1();
-		double weight2 = this.getWeight2();
+		List<Double> inpList = new ArrayList<Double>();
+		for(int i=0; i < this.inputList.size(); i++){
+			inpList.add(this.inputList.get(i));
+		}
+		
+		double thisOut = this.getSignal();
 		
 		//thisOut = 1; desired = 0 => restar
 		if(thisOut > desired){
-			this.setWeights(weight1 - learningRate*x, weight2 - learningRate*y);
+			for(int i=0; i<this.weightList.size(); i++){
+				double newWeight = this.weightList.get(i) - inpList.get(i)*learningRate;
+				this.setIthWeight(i, newWeight);
+			}
 		}
 		//thisOut = 0; desired = 1 => sumar
 		else if(thisOut < desired){
-			this.setWeights(weight1 + learningRate*x, weight2 + learningRate*y);
+			for(int i=0; i<this.weightList.size(); i++){
+				double newWeight = this.weightList.get(i) + inpList.get(i)*learningRate;
+				this.setIthWeight(i, newWeight);
+			}
 		}
 		
+	}
+
+	private void setIthWeight(int index, double newWeight) {
+		this.weightList.set(index, newWeight);
 	}
 	
 

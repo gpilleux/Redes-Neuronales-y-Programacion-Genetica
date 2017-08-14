@@ -49,7 +49,7 @@ public class SigmoidNeuron {
 			}
 			double sigmoidFunction = 1.0 / (1 + Math.exp(-value));
 			//limpiamos inputlist
-			//this.inputList.clear();
+			this.inputList.clear();
 			if(sigmoidFunction > 0.5){
 				this.output = 1;
 				return this.output;
@@ -65,24 +65,29 @@ public class SigmoidNeuron {
 	public void train(double x, double y, double desired, double learningRate){
 		this.setInput(x); this.setInput(y);
 		
-		List<Double> inpList = this.getInputList();
-		//System.out.println(inpList);
+		//when i tried doing inpList = this.inputList it wouldn't
+		//save it even before calling getSignal()
+		List<Double> inpList = new ArrayList<Double>();
+		for(int i=0; i < this.inputList.size(); i++){
+			inpList.add(this.inputList.get(i));
+		}
 		
 		double thisOut = this.getSignal();
-		//System.out.println(inpList);
+		
 		if(thisOut > desired){
+			this.bias -= this.bias*learningRate;
 			for(int i=0; i<this.weightList.size(); i++){
 				double newWeight = this.weightList.get(i) - inpList.get(i)*learningRate;
 				this.setIthWeight(i, newWeight);
 			}
 		}
 		else if(thisOut < desired){
+			this.bias += this.bias*learningRate;
 			for(int i=0; i<this.weightList.size(); i++){
 				double newWeight = this.weightList.get(i) + inpList.get(i)*learningRate;
 				this.setIthWeight(i, newWeight);
 			}
 		}
-		this.inputList.clear();
 	}
 	
 	public double getIthWeight(int index){

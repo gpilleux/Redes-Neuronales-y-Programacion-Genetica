@@ -9,7 +9,7 @@ public class SigmoidLearningRate {
 		sn.setWeights(-3, 2);
 		sn.setBias(1);
 		
-		int trials = 10000;
+		int trials = 1000;
 		
 		int countAssertsBefore = 0;
 		for(int i=0; i<trials; i++){
@@ -18,6 +18,7 @@ public class SigmoidLearningRate {
 			sn.setInput(x);
 			sn.setInput(y);
 			int perceptronOut = (int)sn.getSignal();
+			//System.out.println(perceptronOut);
 			if(2*x + 1 >= y){
 				//1
 				if(perceptronOut == 1)
@@ -29,6 +30,7 @@ public class SigmoidLearningRate {
 			}
 		}
 		System.out.println(1.0*countAssertsBefore/trials);
+		
 		
 		//training camp
 		double c = 0.1;
@@ -48,6 +50,7 @@ public class SigmoidLearningRate {
 			sn.train(x, y, trainedOutput, c);
 		}
 		
+		
 		int countAssertsAfter = 0;
 		for(int i=0; i<trials; i++){
 			double x = ThreadLocalRandom.current().nextInt(-50, 51);
@@ -66,7 +69,7 @@ public class SigmoidLearningRate {
 			}
 		}
 		System.out.println(1.0*countAssertsAfter/trials);
-
 	}
+	
 
 }
