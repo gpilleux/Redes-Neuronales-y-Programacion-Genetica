@@ -149,7 +149,7 @@ public class SigmoidNeuron {
 	public void calculateErrorDelta(int neuronPosition){
 		this.error = 0;
 		this.delta = 0;
-		//if it's the last layer (only 1 neuron) (doesnt have connections)
+		//if it's the last layer (doesn't have connections)
 		if(this.conections.size() <= 0){
 			//System.out.println("entered once");
 			this.error = this.expected - this.output;

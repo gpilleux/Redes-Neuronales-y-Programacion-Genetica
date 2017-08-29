@@ -1,6 +1,7 @@
 package networks;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -8,7 +9,7 @@ public class NetworkLearningRate {
 
 	public static void main(String[] args) {
 		
-		NeuralNetwork nw = new NeuralNetwork(2, 2);
+		NeuralNetwork nw = new NeuralNetwork(2, 2, 1);
 		
 		double learningRate = 0.1;
 		
@@ -31,8 +32,9 @@ public class NetworkLearningRate {
 		chosen.add(0); chosen.add(0); chosen.add(0); chosen.add(0);
 		
 		//list of expected // changing values here we can teach the network
-		List<Integer> expected = new ArrayList<Integer>();
-		expected.add(0); expected.add(1); expected.add(1); expected.add(0);
+		List<Double> expected = new ArrayList<Double>();
+		expected.add((double)0); expected.add((double)1);
+		expected.add((double)1); expected.add((double)0);
 
 		int trials = 100000;
 		
@@ -41,7 +43,7 @@ public class NetworkLearningRate {
 			int randComb = ThreadLocalRandom.current().nextInt(0, 4);
 			nw.feedNetwork(combinations.get(randComb));
 			double compareTo = 0;
-			if(nw.getOutput() > 0.5)
+			if(nw.getOutput().get(0) > 0.5)
 				compareTo = 1;
 			if(compareTo == expected.get(randComb))
 				countAssertsBefore++;
@@ -53,22 +55,26 @@ public class NetworkLearningRate {
 		
 		for(int i=0; i<trials; i++){
 			nw.feedNetwork(combinations.get(0));
-			nw.backwardPropagation(expected.get(0));
+			List<Double> exp1 = new ArrayList<Double>(Arrays.asList(expected.get(0)));
+			nw.backwardPropagation(exp1);
 			nw.updateNetwork(learningRate);
 			chosen.set(0, chosen.get(0)+1);
 			
 			nw.feedNetwork(combinations.get(1));
-			nw.backwardPropagation(expected.get(1));
+			List<Double> exp2 = new ArrayList<Double>(Arrays.asList(expected.get(1)));
+			nw.backwardPropagation(exp2);
 			nw.updateNetwork(learningRate);
 			chosen.set(1, chosen.get(1)+1);
 			
 			nw.feedNetwork(combinations.get(2));
-			nw.backwardPropagation(expected.get(2));
+			List<Double> exp3 = new ArrayList<Double>(Arrays.asList(expected.get(2)));
+			nw.backwardPropagation(exp3);
 			nw.updateNetwork(learningRate);
 			chosen.set(2, chosen.get(2)+1);
 			
 			nw.feedNetwork(combinations.get(3));
-			nw.backwardPropagation(expected.get(3));
+			List<Double> exp4 = new ArrayList<Double>(Arrays.asList(expected.get(3)));
+			nw.backwardPropagation(exp4);
 			nw.updateNetwork(learningRate);
 			chosen.set(3, chosen.get(3)+1);
 		}
@@ -78,7 +84,7 @@ public class NetworkLearningRate {
 			int randComb = ThreadLocalRandom.current().nextInt(0, 4);
 			nw.feedNetwork(combinations.get(randComb));
 			double compareTo = 0;
-			if(nw.getOutput() > 0.5)
+			if(nw.getOutput().get(0) > 0.5)
 				compareTo = 1;
 			if(compareTo == expected.get(randComb))
 				countAssertsAfter++;

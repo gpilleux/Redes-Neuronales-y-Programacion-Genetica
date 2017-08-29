@@ -2,6 +2,7 @@ package networks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javafx.application.Application;
@@ -87,7 +88,7 @@ public class ErrorPlot extends Application {
 	public Node training() throws NumberFormatException, IOException{
 		int trials = 10000;
 		
-		NeuralNetwork nw = new NeuralNetwork(2, 2);
+		NeuralNetwork nw = new NeuralNetwork(2, 2, 1);
 		
 		double learningRate = 0.1;
 		List<List<Double>> combinations = new ArrayList<List<Double>>();
@@ -104,8 +105,9 @@ public class ErrorPlot extends Application {
 		combinations.add(comb1); combinations.add(comb2);
 		combinations.add(comb3); combinations.add(comb4);
 		//list of expected // changing values here we can teach the network
-		List<Integer> expected = new ArrayList<Integer>();
-		expected.add(0); expected.add(1); expected.add(1); expected.add(0);
+		List<Double> expected = new ArrayList<Double>();
+		expected.add((double)0); expected.add((double)1);
+		expected.add((double)1); expected.add((double)0);
 		
 		//training
 		/*
@@ -119,19 +121,23 @@ public class ErrorPlot extends Application {
 		
 		for(int i=0; i<trials; i++){
 			nw.feedNetwork(combinations.get(0));
-			nw.backwardPropagation(expected.get(0));
+			List<Double> exp1 = new ArrayList<Double>(Arrays.asList(expected.get(0)));
+			nw.backwardPropagation(exp1);
 			nw.updateNetwork(learningRate);
 			
 			nw.feedNetwork(combinations.get(1));
-			nw.backwardPropagation(expected.get(1));
+			List<Double> exp2 = new ArrayList<Double>(Arrays.asList(expected.get(1)));
+			nw.backwardPropagation(exp2);
 			nw.updateNetwork(learningRate);
 			
 			nw.feedNetwork(combinations.get(2));
-			nw.backwardPropagation(expected.get(2));
+			List<Double> exp3 = new ArrayList<Double>(Arrays.asList(expected.get(2)));
+			nw.backwardPropagation(exp3);
 			nw.updateNetwork(learningRate);
 			
 			nw.feedNetwork(combinations.get(3));
-			nw.backwardPropagation(expected.get(3));
+			List<Double> exp4 = new ArrayList<Double>(Arrays.asList(expected.get(3)));
+			nw.backwardPropagation(exp4);
 			nw.updateNetwork(learningRate);
 		}
 		

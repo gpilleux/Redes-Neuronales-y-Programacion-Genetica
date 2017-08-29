@@ -10,7 +10,7 @@ public class AndNetwork {
 
 	public static void main(String[] args) {
 		
-		NeuralNetwork nw = new NeuralNetwork(2, 2);
+		NeuralNetwork nw = new NeuralNetwork(2, 2, 1);
 		
 		double learningRate = 0.1;
 		
@@ -33,8 +33,9 @@ public class AndNetwork {
 		chosen.add(0); chosen.add(0); chosen.add(0); chosen.add(0);
 		
 		//list of expected
-		List<Integer> expected = new ArrayList<Integer>();
-		expected.add(0); expected.add(0); expected.add(0); expected.add(1);
+		List<Double> expected = new ArrayList<Double>();
+		expected.add((double)0); expected.add((double)0);
+		expected.add((double)0); expected.add((double)1);
 		
 		//training camp
 		//check weights before train
@@ -50,7 +51,8 @@ public class AndNetwork {
 			//System.out.println(combinations.get(randComb));
 			nw.feedNetwork(combinations.get(randComb));
 			//backward propagate
-			nw.backwardPropagation(expected.get(randComb));
+			List<Double> exp = new ArrayList<Double>(); exp.add(expected.get(randComb));
+			nw.backwardPropagation(exp);
 			//System.out.println(expected.get(randComb));
 			//learning
 			nw.updateNetwork(learningRate);

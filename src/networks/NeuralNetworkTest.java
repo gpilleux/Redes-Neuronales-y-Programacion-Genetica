@@ -1,6 +1,6 @@
 package networks;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class NeuralNetworkTest {
 		List<Integer> hiddenLayers = new ArrayList<Integer>();
 		hiddenLayers.add(3); hiddenLayers.add(2);
 		//2 inputs, neuron formation: 2,3,2,1
-		nc = new NeuralNetwork(2, 2, 2, hiddenLayers);
+		nc = new NeuralNetwork(2, 2, 2, hiddenLayers, 1);
 		
 		
 		//AND / XOR testing
@@ -78,21 +78,22 @@ public class NeuralNetworkTest {
 			SigmoidNeuron hid = lastHidden.get(i);
 			for(int j=0; j<hid.getConections().size(); j++){
 				//verify the connection (-->)
-				assertEquals(hid.getConections().get(j), nc.getOutputLayer());
+				assertEquals(hid.getConections().get(j), nc.getOutputLayer().get(0));
 				//verify the getsFedBy (<--)
-				assertEquals(nc.getOutputLayer().getGetsFedBy().get(i), hid);
+				assertEquals(nc.getOutputLayer().get(0).getGetsFedBy().get(i), hid);
 			}
 		}
 	}
 
 	@Test
 	public void andTest() {
-		nwAnd = new NeuralNetwork(2, 2);
+		nwAnd = new NeuralNetwork(2, 2, 1);
 		//first train
 		
 		//list of expected
-		List<Integer> expected = new ArrayList<Integer>();
-		expected.add(0); expected.add(0); expected.add(0); expected.add(1);
+		List<Double> expected = new ArrayList<Double>();
+		expected.add((double)0); expected.add((double)0);
+		expected.add((double)0); expected.add((double)1);
 		
 		int trials = 10000;
 		for(int i=0; i<trials; i++){
@@ -101,7 +102,8 @@ public class NeuralNetworkTest {
 			//feed the random combination
 			nwAnd.feedNetwork(combinations.get(randComb));
 			//backward propagate
-			nwAnd.backwardPropagation(expected.get(randComb));
+			List<Double> exp = new ArrayList<Double>(); exp.add(expected.get(randComb));
+			nwAnd.backwardPropagation(exp);
 			//learning
 			nwAnd.updateNetwork(learningRate);
 		}
@@ -109,21 +111,22 @@ public class NeuralNetworkTest {
 		for(List<Double> comb : combinations){
 			int compareTo = 0;
 			nwAnd.feedNetwork(comb);
-			if(nwAnd.getOutput() > 0.5)
+			if(nwAnd.getOutput().get(0) > 0.5)
 				compareTo = 1;
-			assertEquals((int)expected.get(combinations.indexOf(comb)), compareTo);
+			assertTrue(expected.get(combinations.indexOf(comb)) == (double)compareTo);
 			nwAnd.clearInputList();
 		}
 	}
 	
 	@Test
 	public void XORTest() {
-		nwXor = new NeuralNetwork(2, 2);
+		nwXor = new NeuralNetwork(2, 2, 1);
 		//first train
 		
 		//list of expected
-		List<Integer> expected = new ArrayList<Integer>();
-		expected.add(0); expected.add(1); expected.add(1); expected.add(0);
+		List<Double> expected = new ArrayList<Double>();
+		expected.add((double)0); expected.add((double)1);
+		expected.add((double)1); expected.add((double)0);
 		
 		int trials = 100000;
 		for(int i=0; i<trials; i++){
@@ -132,7 +135,8 @@ public class NeuralNetworkTest {
 			//feed the random combination
 			nwXor.feedNetwork(combinations.get(randComb));
 			//backward propagate
-			nwXor.backwardPropagation(expected.get(randComb));
+			List<Double> exp = new ArrayList<Double>(); exp.add(expected.get(randComb));
+			nwXor.backwardPropagation(exp);
 			//learning
 			nwXor.updateNetwork(learningRate);
 		}
@@ -140,13 +144,12 @@ public class NeuralNetworkTest {
 		for(List<Double> comb : combinations){
 			int compareTo = 0;
 			nwXor.feedNetwork(comb);
-			if(nwXor.getOutput() > 0.5)
+			if(nwXor.getOutput().get(0) > 0.5)
 				compareTo = 1;
-			assertEquals((int)expected.get(combinations.indexOf(comb)), compareTo);
+			assertTrue(expected.get(combinations.indexOf(comb)) == (double)compareTo);
 			nwXor.clearInputList();
 		}
 	}
-	
 	
 
 }

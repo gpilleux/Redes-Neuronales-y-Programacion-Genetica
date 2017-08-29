@@ -59,7 +59,7 @@ public class Main {
 		combinations.add(comb1); combinations.add(comb2);
 		combinations.add(comb3); combinations.add(comb4);
 		
-		NeuralNetwork nw = new NeuralNetwork(2, 2);
+		NeuralNetwork nw = new NeuralNetwork(2, 2, 1);
 		
 		List<Double> maxMin = nw.calculateMaxMin(combinations);
 		double normalized = nw.normalized(comb1.get(1), maxMin.get(2*1), maxMin.get(2*1+1), 1, 0);

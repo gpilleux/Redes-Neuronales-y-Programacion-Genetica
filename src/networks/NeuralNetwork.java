@@ -9,8 +9,8 @@ import sigmoid.SigmoidNeuron;
 public class NeuralNetwork {
 	private List<SigmoidNeuron> inputLayer;
 	private List<List<SigmoidNeuron>> hiddenLayers;
-	//private List<SigmoidNeuron> outputLayer;
-	private SigmoidNeuron output;
+	private List<SigmoidNeuron> outputLayer;
+	//private SigmoidNeuron output;
 	
 	private List<Number> errorList;
 	
@@ -21,11 +21,12 @@ public class NeuralNetwork {
 	 * hiddenLayers: how many hidden layers
 	 * numbersHiddenLayer: list of the numbers of neurons of each layer
 	 */
-	public NeuralNetwork(int numberInputs, int numberInputLayer, int hiddenLayers, List<Integer> numbersHiddenLayer){
+	public NeuralNetwork(int numberInputs, int numberInputLayer, int hiddenLayers,
+			List<Integer> numbersHiddenLayer, int numberOutputs){
 		this.setUpVariables();
 		this.createInputLayer(numberInputs, numberInputLayer);
 		this.createHiddenLayers(hiddenLayers, numbersHiddenLayer);
-		this.createOutputLayer();
+		this.createOutputLayer(numberOutputs);
 		this.connectNetwork();
 	}
 
@@ -34,10 +35,10 @@ public class NeuralNetwork {
 	 * numberInputs: number of inputs being fed (weights)
 	 * numberInputLayer: number of neurons of the inputLayer
 	 */
-	public NeuralNetwork(int numberInputs, int numberInputLayer){
+	public NeuralNetwork(int numberInputs, int numberInputLayer, int numberOutputs){
 		this.setUpVariables();
 		this.createInputLayer(numberInputs, numberInputLayer);
-		this.createOutputLayer();
+		this.createOutputLayer(numberOutputs);
 		this.connectNetwork();
 	}
 	
@@ -45,6 +46,7 @@ public class NeuralNetwork {
 		this.inputLayer = new ArrayList<SigmoidNeuron>();
 		this.hiddenLayers = new ArrayList<List<SigmoidNeuron>>();
 		this.errorList = new ArrayList<Number>();
+		this.outputLayer = new ArrayList<SigmoidNeuron>();
 	}
 	
 	/*
@@ -81,17 +83,21 @@ public class NeuralNetwork {
 		return snList;
 	}
 	
-	private void createOutputLayer(){
+	private void createOutputLayer(int numberOutputs){
 		//if there're no hidden layers, create output based on inputLayer
 		if(this.hiddenLayers.size() <= 0){
 			//this.outputLayer.add(createNeuron(this.inputLayer.size()));
-			this.output = createNeuron(this.inputLayer.size());
+			for(int i=0; i<numberOutputs; i++){
+				this.outputLayer.add(createNeuron(this.inputLayer.size()));
+			}
+			//this.output = createNeuron(this.inputLayer.size());
 		}
 		//there're hidden layers, create output based on the last hidden layer
 		else{
+			//get the last hidden layer's size to know how many weights
 			int opWeights = this.hiddenLayers.get(this.hiddenLayers.size() - 1).size();
-			//this.outputLayer.add(createNeuron(opWeights));
-			this.output = createNeuron(opWeights);
+			this.outputLayer.add(createNeuron(opWeights));
+			//this.output = createNeuron(opWeights);
 		}
 	}
 	
@@ -108,10 +114,12 @@ public class NeuralNetwork {
 		//if no hidden layers, connect inputlayer to the output
 		if(this.hiddenLayers.size() <= 0){
 			for(SigmoidNeuron inp : this.inputLayer){
-				//add the connection to the inputList
-				inp.addConection(this.output);
-				//add the getsFedBy connection
-				this.output.addGetsFedBy(inp);
+				for(SigmoidNeuron out : this.outputLayer){
+					//add the connection to the inputList
+					inp.addConection(out);
+					//add the getsFedBy connection
+					out.addGetsFedBy(inp);
+				}
 			}
 		}
 		//exists hidden layer
@@ -135,11 +143,13 @@ public class NeuralNetwork {
 				i++; j++;
 			}
 			//connect last hidden layer to the output
-			for(SigmoidNeuron last : this.hiddenLayers.get(this.hiddenLayers.size() - 1)){
-				last.addConection(this.output);
-				this.output.addGetsFedBy(last);
+			List<SigmoidNeuron> lastHidden = this.hiddenLayers.get(this.hiddenLayers.size() - 1); 
+			for(SigmoidNeuron last : lastHidden){
+				for(SigmoidNeuron out : this.outputLayer){
+					last.addConection(out);
+					out.addGetsFedBy(last);
+				}
 			}
-			
 		}
 	}
 	
@@ -153,12 +163,19 @@ public class NeuralNetwork {
 	}
 	
 	
-	public void backwardPropagation(double expected){
-		this.output.setExpected(expected);
-		this.output.calculateErrorDelta(0);
+	public void backwardPropagation(List<Double> expected){
+		for(int i=0; i<this.outputLayer.size(); i++){
+			this.outputLayer.get(i).setExpected(expected.get(i));
+			this.outputLayer.get(i).calculateErrorDelta(0);
+		}
 		
+		//calculate error like sum(error^2)
+		double cuadraticError = 0;
+		for(SigmoidNeuron out : this.outputLayer){
+			cuadraticError += Math.pow(out.getError(), 2);
+		}
 		//add error to list
-		this.errorList.add(Math.pow(this.output.getError(), 2));
+		this.errorList.add(cuadraticError);
 		
 		//for each layer, starting from the last layer, calculate error&delta
 		for(int i=this.hiddenLayers.size() - 1; i>=0; i--){
@@ -168,6 +185,7 @@ public class NeuralNetwork {
 				hidden.calculateErrorDelta(list.indexOf(hidden));
 			}
 		}
+		
 		//calculate error&delta for inputLayer
 		for(SigmoidNeuron inp : this.inputLayer){
 			inp.calculateErrorDelta(this.inputLayer.indexOf(inp));
@@ -175,6 +193,7 @@ public class NeuralNetwork {
 		}
 	}
 	
+	//update weights for each layer in order : input, hidden, output
 	public void updateNetwork(double learningRate){
 		//update inputLater
 		for(SigmoidNeuron sn : this.inputLayer){
@@ -186,23 +205,28 @@ public class NeuralNetwork {
 				sn.updateWeights(learningRate);
 			}
 		}
-		this.output.updateWeights(learningRate);
+		//update outputLayer
+		for(SigmoidNeuron out : this.outputLayer){
+			out.updateWeights(learningRate);
+		}
 	}
 	
 	
 	public void clearInputList(){
-		//clear inputlist in inputLayer
+		//clear input list in inputLayer
 		for(SigmoidNeuron inp : this.inputLayer){
 			inp.getInputList().clear();
 		}
-		//clear inputlist in every hiddenLayer
+		//clear input list in every hiddenLayer
 		for(List<SigmoidNeuron> list : this.hiddenLayers){
 			for(SigmoidNeuron hidden : list){
 				hidden.getInputList().clear();
 			}
 		}
 		//clear inputlist in outputLayer
-		this.output.getInputList().clear();
+		for(SigmoidNeuron out : this.outputLayer){
+			out.getInputList().clear();
+		}
 		
 	}
 	
@@ -210,8 +234,12 @@ public class NeuralNetwork {
 	/*
 	 * Getters
 	 */
-	public double getOutput(){
-		return this.output.getOutput();
+	public List<Double> getOutput(){
+		List<Double> outputs = new ArrayList<Double>();
+		for(SigmoidNeuron out : this.outputLayer){
+			outputs.add(out.getOutput());
+		}
+		return outputs;
 	}
 	
 	public List<SigmoidNeuron> getInputLayer(){
@@ -222,12 +250,12 @@ public class NeuralNetwork {
 		return this.hiddenLayers;
 	}
 	
-	public SigmoidNeuron getOutputLayer(){
-		return this.output;
+	public List<SigmoidNeuron> getOutputLayer(){
+		return this.outputLayer;
 	}
 
+	//returns the list of errors for each iteration it was trained
 	public List<Number> getErrorList() {
-		
 		List<Number> newErrorList = new ArrayList<Number>();
 		
 		for(int i=0; i<this.errorList.size()/4; i++){
@@ -241,6 +269,7 @@ public class NeuralNetwork {
 		return newErrorList;
 	}
 	
+	//normalize a list of lists so that it can be put to the network
 	public List<List<Double>> normalizationList(List<List<Double>> aNormalizar, double nH, double nL){
 		List<List<Double>> newNorm = new ArrayList<List<Double>>();
 		for(List<Double> aNorm : aNormalizar){
@@ -255,10 +284,12 @@ public class NeuralNetwork {
 		return newNorm;
 	}
 	
+	//return normalized value
 	public double normalized(double valorNorm, double dH, double dL, double nH, double nL){
 		return (double)(valorNorm-dL)*(nH-nL)/(dH - dL) + nL;
 	}
 	
+	//normalize a list, returns a new list with the normalized values
 	public List<Double> normalizedList(List<Double> beforeNorm, double dH, double dL, double nH, double nL){
 		List<Double> normList = new ArrayList<Double>();
 		for(double val : beforeNorm){
@@ -294,4 +325,4 @@ public class NeuralNetwork {
 
 }
 
-// outputLayer !!
+
