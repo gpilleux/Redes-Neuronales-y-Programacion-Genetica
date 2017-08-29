@@ -1,4 +1,4 @@
-package Sigmoid;
+package sigmoid;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -28,6 +28,7 @@ public class SigmoidLearningRate {
 				if(perceptronOut == 0)
 					countAssertsBefore++;
 			}
+			sn.getInputList().clear();
 		}
 		System.out.println(1.0*countAssertsBefore/trials);
 		
@@ -67,6 +68,7 @@ public class SigmoidLearningRate {
 				if(perceptronOut == 0)
 					countAssertsAfter++;
 			}
+			sn.getInputList().clear();
 		}
 		System.out.println(1.0*countAssertsAfter/trials);
 	}

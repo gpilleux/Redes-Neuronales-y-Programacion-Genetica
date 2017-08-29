@@ -1,4 +1,4 @@
-package Perceptron;
+package perceptron;
 
 public class AddPerceptron {
 	private Perceptron p1;

@@ -1,4 +1,4 @@
-package Perceptron;
+package perceptron;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
