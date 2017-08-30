@@ -3,7 +3,9 @@ package networks;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -86,6 +88,85 @@ public class ErrorPlot extends Application {
 	}
 	
 	public Node training() throws NumberFormatException, IOException{
+		
+List<List<Double>> data = DataParser.parseToNetwork("seed_data.txt");
+		
+		//expected is the last list
+		List<Double> expected = data.get(data.size()-1);
+		//System.out.println(data.get(data.size()-1) == expected); //true
+		data.remove(data.size() - 1);
+		
+		List<Double> one = new ArrayList<Double>(); one.add((double)1); one.add((double)0); one.add((double)0);
+		List<Double> two = new ArrayList<Double>(); two.add((double)0); two.add((double)1); two.add((double)0);
+		List<Double> three = new ArrayList<Double>(); three.add((double)0); three.add((double)0); three.add((double)1);
+		
+		//System.out.println(data.get(data.size()-1) == expected); //false (removed)
+		Map<Double, List<Double>> tripleExpected = new HashMap<Double, List<Double>>();
+		tripleExpected.put((double)1, one);
+		tripleExpected.put((double)2, two);
+		tripleExpected.put((double)3, three);
+		
+		/*
+		 * make NeuralNetwork
+		 */
+		
+		List<Integer> hiddenLayer = new ArrayList<Integer>();
+		hiddenLayer.add(5);
+		
+		// 7 inputs, 3 inputNeuron, 1 hidden layer (5 Neurons), 3 outputNeurons
+		NeuralNetwork nw = new NeuralNetwork(7, 5, 3);
+		
+		/*
+		 * Normalize data
+		 */
+		List<List<Double>> normalizedData = nw.normalizationList(data, 1, 0);
+		//System.out.println(normalizedData);
+		
+		/*
+		 * separate data 80 training - 20 testing
+		 */
+		//80%
+		List<List<Double>> trainSet = nw.generateRandoms(normalizedData, expected, 0.8);
+		List<Double> trainExpected = trainSet.get(trainSet.size() - 1);
+		trainSet.remove(trainSet.size() - 1);
+		//20%
+		List<List<Double>> testSet = nw.generateRandoms(normalizedData, expected, 0.2);
+		List<Double> testExpected = testSet.get(testSet.size() - 1);
+		testSet.remove(testSet.size() - 1);
+		
+		
+		/*
+		 * before training, check performance
+		 */
+		
+		
+		
+		/*
+		 * train with 80% of the data
+		 */
+		int trials = 100;
+		
+		double learningRate = 0.1;
+		for(int j=0; j <trials; j++){
+			for(int i=0; i<trainSet.size(); i++){
+				//System.out.println(trainSet.get(i) + " " + tripleExpected.get(trainExpected.get(i)));
+				nw.trainNetwork(trainSet.get(i), tripleExpected.get(trainExpected.get(i)), learningRate);
+				//break;
+			}
+		}
+		
+		
+		List<Number> y = nw.getErrorList();
+		
+		List<Number> x = new ArrayList<Number>();
+		for(int i=0; i<y.size(); i++){
+			x.add(i+1);
+		}
+		
+		return buildPlot(x, y);
+	}
+	/*
+	public Node training() throws NumberFormatException, IOException{
 		int trials = 10000;
 		
 		NeuralNetwork nw = new NeuralNetwork(2, 2, 1);
@@ -110,14 +191,14 @@ public class ErrorPlot extends Application {
 		expected.add((double)1); expected.add((double)0);
 		
 		//training
-		/*
+		
 		for(int i=0; i<trials; i++){
 			int rand = ThreadLocalRandom.current().nextInt(0, 3);
 			nw.feedNetwork(combinations.get(rand));
 			nw.backwardPropagation(expected.get(rand));
 			nw.updateNetwork(learningRate);
 		}
-		*/
+		
 		
 		for(int i=0; i<trials; i++){
 			nw.feedNetwork(combinations.get(0));
@@ -151,4 +232,5 @@ public class ErrorPlot extends Application {
 		
 		return buildPlot(x, y);
 	}
+	*/
 }

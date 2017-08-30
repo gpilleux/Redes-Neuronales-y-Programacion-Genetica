@@ -1,14 +1,17 @@
 package mains;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import networks.DataParser;
 import networks.NeuralNetwork;
 import sigmoid.SigmoidNeuron;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		
 		SigmoidNeuron sn1 = new SigmoidNeuron();
 		sn1.setWeights(-2, -2);
 		sn1.setBias(3);
@@ -74,8 +77,9 @@ public class Main {
 		System.out.println(nw.getOutput());
 		
 		
-		
-		
+		List<List<Double>> data = DataParser.parseToNetwork("seed_data.txt");
+		System.out.println(data.get(69));
+		System.out.println(data.get(data.size()-1).get(69));
 		
 		
 		

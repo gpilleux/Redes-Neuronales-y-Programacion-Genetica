@@ -3,6 +3,7 @@ package networks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import sigmoid.SigmoidNeuron;
 
@@ -96,8 +97,10 @@ public class NeuralNetwork {
 		else{
 			//get the last hidden layer's size to know how many weights
 			int opWeights = this.hiddenLayers.get(this.hiddenLayers.size() - 1).size();
-			this.outputLayer.add(createNeuron(opWeights));
+			for(int i=0; i<numberOutputs; i++){
+				this.outputLayer.add(createNeuron(opWeights));
 			//this.output = createNeuron(opWeights);
+			}
 		}
 	}
 	
@@ -279,14 +282,16 @@ public class NeuralNetwork {
 	//normalize a list of lists so that it can be put to the network
 	public List<List<Double>> normalizationList(List<List<Double>> aNormalizar, double nH, double nL){
 		List<List<Double>> newNorm = new ArrayList<List<Double>>();
-		for(List<Double> aNorm : aNormalizar){
-			double dH = Collections.max(aNorm);
-			double dL = Collections.min(aNorm);
-			List<Double> newList = new ArrayList<Double>();
-			for(double element : aNorm){
-				newList.add(normalized(element, dH, dL, nH, nL));
+		List<Double> maxMins = calculateMaxMin(aNormalizar);
+		for(List<Double> cadaLista : aNormalizar){
+			List<Double> normalizedList = new ArrayList<Double>();
+			for(int i=0; i<cadaLista.size(); i++){
+				double dH = maxMins.get(2*i);
+				double dL = maxMins.get(2*i+1);
+				double normalizedValue = this.normalized(cadaLista.get(i), dH, dL, nH, nL);
+				normalizedList.add(normalizedValue);
 			}
-			newNorm.add(newList);
+			newNorm.add(normalizedList);
 		}
 		return newNorm;
 	}
@@ -314,7 +319,7 @@ public class NeuralNetwork {
 			maxMin.add(Double.MIN_VALUE); // max
 			maxMin.add(Double.MAX_VALUE);
 		}
-		// initialize max,min with values from first list
+		// find max and min
 		for(int i=0; i<inputs.size(); i++){
 			for(int j=0; j<inputs.get(i).size(); j++){
 				// if i,j > than max => max = i,j
@@ -328,6 +333,19 @@ public class NeuralNetwork {
 			}
 		}
 		return maxMin;
+	}
+	
+	//partition must be in decimal format. Ex: 80% = 0.8
+	public List<List<Double>> generateRandoms(List<List<Double>> prevList, List<Double> expected, double partition){
+		List<List<Double>> randomList = new ArrayList<List<Double>>();
+		List<Double> randExpected = new ArrayList<Double>();
+		for(int i=0; i<prevList.size()*partition; i++){
+			int rand = ThreadLocalRandom.current().nextInt(0, prevList.size());
+			randomList.add(prevList.get(rand));
+			randExpected.add(expected.get(rand));
+		}
+		randomList.add(randExpected);
+		return randomList;
 	}
 
 }
