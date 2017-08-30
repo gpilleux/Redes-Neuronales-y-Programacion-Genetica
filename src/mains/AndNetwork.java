@@ -38,25 +38,41 @@ public class AndNetwork {
 		expected.add((double)0); expected.add((double)1);
 		
 		//training camp
-		//check weights before train
 		//System.out.println(nw.getOutputLayer().getWeightList());
 		
 		int trials = 10000;
-		for(int i=0; i<trials; i++){
-			// random value from [0,4]
-			int randComb = ThreadLocalRandom.current().nextInt(0, 4);
-			//update value from chosen
-			chosen.set(randComb, chosen.get(randComb)+1);
-			//feed the random combination
-			//System.out.println(combinations.get(randComb));
-			nw.feedNetwork(combinations.get(randComb));
-			//backward propagate
-			List<Double> exp = new ArrayList<Double>(); exp.add(expected.get(randComb));
-			nw.backwardPropagation(exp);
-			//System.out.println(expected.get(randComb));
-			//learning
-			nw.updateNetwork(learningRate);
-			//System.out.println(nw.getOutputLayer().getOutput());
+		int trainMethod = 1;
+		if(trainMethod == 0){
+			System.out.println("first");
+			for(int i=0; i<trials; i++){
+				int randComb = ThreadLocalRandom.current().nextInt(0, 4);
+				chosen.set(randComb, chosen.get(randComb)+1);
+				List<Double> exp = new ArrayList<Double>(); exp.add(expected.get(randComb));
+				nw.trainNetwork(combinations.get(randComb), exp, learningRate);
+				//nw.feedNetwork(combinations.get(randComb));
+				
+				//nw.backwardPropagation(exp);
+				//nw.updateNetwork(learningRate);
+			}
+		}
+		else{
+			System.out.println("second");
+			for(int i=0; i<trials; i++){
+				// random value from [0,4]
+				int randComb = ThreadLocalRandom.current().nextInt(0, 4);
+				//update value from chosen
+				chosen.set(randComb, chosen.get(randComb)+1);
+				//feed the random combination
+				//System.out.println(combinations.get(randComb));
+				nw.feedNetwork(combinations.get(randComb));
+				//backward propagate
+				List<Double> exp = new ArrayList<Double>(); exp.add(expected.get(randComb));
+				nw.backwardPropagation(exp);
+				//System.out.println(expected.get(randComb));
+				//learning
+				nw.updateNetwork(learningRate);
+				//System.out.println(nw.getOutputLayer().getOutput());
+			}
 		}
 		
 		//check 'equally' distributed learning points given

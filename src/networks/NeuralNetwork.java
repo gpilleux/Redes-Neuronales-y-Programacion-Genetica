@@ -211,6 +211,13 @@ public class NeuralNetwork {
 		}
 	}
 	
+	//trainNetwork = feed + backwardpropagation + updateweights
+	public void trainNetwork(List<Double> combination, List<Double> expected, double learningRate){
+		this.feedNetwork(combination);
+		this.backwardPropagation(expected);
+		this.updateNetwork(learningRate);
+	}
+	
 	
 	public void clearInputList(){
 		//clear input list in inputLayer
