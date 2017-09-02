@@ -2,7 +2,6 @@ package networks;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-public class ErrorPlot extends Application {
+public class DifferentLearningRate extends Application {
 	
 	/**
 	 * Guarda el archivo de datos
@@ -69,17 +68,25 @@ public class ErrorPlot extends Application {
         stage.show();
     }
 
-	protected Node buildPlot(List<Number> x, List<Number> y, List<Number> y2) throws NumberFormatException, IOException {
+	protected Node buildPlot(List<Number> x, List<Number> y0, List<Number> y1, List<Number> y2, List<Number> y3, List<Number> y4, List<Number> y5) throws NumberFormatException, IOException {
 			String title = "Error vs. Taught Trials";
 			String xLAbel = "Number of trials";
 			String yLabel = "Error";
-			String seriesName1 = "Normal";
-			String seriesName2 = "More layers";
+			String LR0 = "Learning Rate = 0.1";
+			String LR1 = "Learning Rate = 0.2";
+			String LR2 = "Learning Rate = 0.3";
+			String LR3 = "Learning Rate = 0.5";
+			String LR4 = "Learning Rate = 0.7";
+			String LR5 = "Learning Rate = 1";
 
 			LinePlot<Number, Number> lineplot = new LinePlot<>(new NumberAxis(), new NumberAxis());
 				
-			lineplot.addSeries(x, y, seriesName1);
-			lineplot.addSeries(x, y2, seriesName2);
+			lineplot.addSeries(x, y0, LR0);
+			lineplot.addSeries(x, y1, LR1);
+			lineplot.addSeries(x, y2, LR2);
+			lineplot.addSeries(x, y3, LR3);
+			lineplot.addSeries(x, y4, LR4);
+			lineplot.addSeries(x, y5, LR5);
 				
 			lineplot.setTitle(title);
 			lineplot.setXLabel(xLAbel);
@@ -112,15 +119,13 @@ List<List<Double>> data = DataParser.parseToNetwork("seed_data.txt");
 		 * make NeuralNetwork
 		 */
 		
-		List<Integer> hiddenLayer = new ArrayList<Integer>();
-		hiddenLayer.add(3);
-		hiddenLayer.add(5);
-		
-		//network with more layers to see result
-		NeuralNetwork nwML = new NeuralNetwork(7, 5, 2, hiddenLayer, 3);
-		
 		// 7 inputs, 5 inputNeuron, 3 outputNeurons
 		NeuralNetwork nw = new NeuralNetwork(7, 5, 3);
+		NeuralNetwork nw1 = new NeuralNetwork(7, 5, 3);
+		NeuralNetwork nw2 = new NeuralNetwork(7, 5, 3);
+		NeuralNetwork nw3 = new NeuralNetwork(7, 5, 3);
+		NeuralNetwork nw4 = new NeuralNetwork(7, 5, 3);
+		NeuralNetwork nw5 = new NeuralNetwork(7, 5, 3);
 		
 		/*
 		 * Normalize data
@@ -144,29 +149,40 @@ List<List<Double>> data = DataParser.parseToNetwork("seed_data.txt");
 		/*
 		 * train with 80% of the data
 		 */
-		int trials = 50;
+		int trials = 3;
 		
 		double learningRate = 0.1;
 		for(int j=0; j <trials; j++){
 			for(int i=0; i<trainSet.size(); i++){
 				//System.out.println(trainSet.get(i) + " " + tripleExpected.get(trainExpected.get(i)));
-				nw.trainNetwork(trainSet.get(i), tripleExpected.get(trainExpected.get(i)), learningRate);
-				nwML.trainNetwork(trainSet.get(i), tripleExpected.get(trainExpected.get(i)), learningRate);
+				nw.trainNetwork(trainSet.get(i), tripleExpected.get(trainExpected.get(i)), 0.1);
+				nw1.trainNetwork(trainSet.get(i), tripleExpected.get(trainExpected.get(i)), 0.2);
+				nw2.trainNetwork(trainSet.get(i), tripleExpected.get(trainExpected.get(i)), 0.3);
+				nw3.trainNetwork(trainSet.get(i), tripleExpected.get(trainExpected.get(i)), 0.5);
+				nw4.trainNetwork(trainSet.get(i), tripleExpected.get(trainExpected.get(i)), 0.7);
+				nw5.trainNetwork(trainSet.get(i), tripleExpected.get(trainExpected.get(i)), 1.0);
 				//break;
 			}
 		}
 		
 		
 		List<Number> y = nw.getErrorList();
+		List<Number> y1 = nw1.getErrorList();
+		List<Number> y2 = nw2.getErrorList();
+		List<Number> y3 = nw3.getErrorList();
+		List<Number> y4 = nw4.getErrorList();
+		List<Number> y5 = nw5.getErrorList();
 		
-		List<Number> yML = nwML.getErrorList();
 		
 		List<Number> x = new ArrayList<Number>();
 		for(int i=0; i<y.size(); i++){
 			x.add(i+1);
 		}
 		
-		return buildPlot(x, y, yML);
+		
+		
+		
+		return buildPlot(x, y, y1, y2, y3, y4, y5);
 	}
 	/*
 	public Node training() throws NumberFormatException, IOException{

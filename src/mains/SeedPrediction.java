@@ -2,11 +2,12 @@ package mains;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.rules.Stopwatch;
 
 import networks.DataParser;
 import networks.NeuralNetwork;
@@ -74,6 +75,9 @@ public class SeedPrediction {
 		 * train with 80% of the data
 		 */
 		
+		long startTime = System.currentTimeMillis();
+		
+		
 		double learningRate = 0.1;
 		int trainTrials = 100;
 		
@@ -84,6 +88,11 @@ public class SeedPrediction {
 				//break;
 			}
 		}
+		
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		System.out.println("80% data = "+ data.size()*0.8 +" rows in " + elapsedTime + "ms");
+		System.out.println("Speed = " + (int)(1000*data.size()*0.8/elapsedTime) + " rows/seg");
 
 		/*
 		 * test with 20% of data
@@ -102,6 +111,7 @@ public class SeedPrediction {
 			//System.out.println(nw.getOutput() + " " + prediction + " " + exp);
 		}
 		System.out.println(1.0*assertsAfterTrain/testSet.size());
+		
 		
 	}
 
