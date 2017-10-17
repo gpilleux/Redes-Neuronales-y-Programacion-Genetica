@@ -12,6 +12,8 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 		
+		
+		
 		SigmoidNeuron sn1 = new SigmoidNeuron();
 		sn1.setWeights(-2, -2);
 		sn1.setBias(3);
